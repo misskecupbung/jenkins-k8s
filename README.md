@@ -123,7 +123,7 @@ Login -> Manage Jenkins -> Configure System -> Add a new cloud > Kubernetes :
        * Namespace : jenkins
        * Container name : jnlp
        * Docker images : joao29a/jnlp-slave-alpine-docker
-Apply/Save
+   * Apply/Save
 
 #### Create credential
 
