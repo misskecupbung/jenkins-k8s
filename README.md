@@ -35,7 +35,7 @@ docker -H tcp://10.0.1.101:2375 version
 docker -H tcp://10.0.1.100:2375 version
 ```
 
-#### Eksekusi di node an-master0
+### Eksekusi di node an-master0
 
 #### Create Private Docker registry
  ```
@@ -55,6 +55,7 @@ sudo apt update; sudo apt install -y kubectl=1.15.4-00 kubelet=1.15.4-00 kubeadm
 ```
 
 ### Eksekusi di node an-master0
+
 ```
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 mkdir -p $HOME/.kube
