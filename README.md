@@ -44,7 +44,7 @@ sudo docker run -d -p 5000:5000 --restart=always --name registry registry:2
 
 ### Eksekusi disemua node
 
-* Install k8s
+#### Install k8s
 ```
 sudo apt install -y apt-transport-https; curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 sudo vi /etc/apt/sources.list.d/kubernetes.list
@@ -72,7 +72,7 @@ kubectl get pods --all-namespaces --watch
 sudo kubeadm token list
 sudo openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
 ```
-##### Eksekusi di node an-worker0 dan an-worker1 #####
+### Eksekusi di node an-worker0 dan an-worker1
 
 * Join Node Worker ke Master (pastikan swap tidak menyala)
 ```
@@ -81,30 +81,31 @@ sudo swapoff -a
 sudo kubeadm join --token [TOKEN] [NODE-MASTER]:6443 --discovery-token-ca-cert-hash sha256:[TOKEN-CA-CERT-HASH]
 ```
 
-##### Eksekusi di node an-master0 #####
-#### * Clone repository
+### Eksekusi di node an-master0
+
+#### Clone repository
 ```
 git clone https://github.com/misskecupbung/jenkins-k8s.git
 cd jenkins-k8s/modified-images/
 ```
-#### * build images
+#### build images
 ```
 docker build -t misskecupbung/jenkins-k8s:latest .
 docker login
 docker push misskecupbung/jenkins-k8s:latest
 ```
-#### * create deployment and service
+#### create deployment and service
 ```
 kubectl apply -f jenkins-deployment.yaml 
 kubectl apply -f jenkins-service.yaml 
 kubectl get deployment,pod,service
 ```
-* Login ke Jenkins Dashboard
+#### Login ke Jenkins Dashboard
 ```
 http://an-master0:30100
 ```
 
-* install plugin
+#### install plugin
 Login -> Manage Jenkins -> Manage Plugins -> Available :
    * Blue Ocean
    * Kubernetes :: Pipeline :: DevOps Steps	
