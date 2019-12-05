@@ -98,6 +98,11 @@ kubectl apply -f jenkins-deployment.yaml
 kubectl apply -f jenkins-service.yaml 
 kubectl get deployment,pod,service
 ```
+* Login ke Jenkins Dashboard
+```
+http://an-master0:30100
+```
+
 * install plugin
 Login -> Manage Jenkins -> Manage Plugins -> Available :
    * Blue Ocean
@@ -107,6 +112,15 @@ Login -> Manage Jenkins -> Manage Plugins -> Available :
    * Kubernetes Continuous Deploy Plugin
    * Kubernetes Credentials Plugin
    * Kubernetes plugin
+   
+* Manage Kubernetes
+Login -> Manage Jenkins -> Configure System -> Add a new cloud > Kubernetes :
+   * Kubernetes URL : http://10.60.8.133:30100/
+   * Add Container Template :
+       * Namespace : jenkins
+       * Container name : jnlp
+       * Docker images : joao29a/jnlp-slave-alpine-docker
+Apply/Save
 
 * create credential
 Login -> Credentials -> Jenkins -> Global credentials (unrestricted) -> Add Credential :
@@ -116,3 +130,12 @@ Login -> Credentials -> Jenkins -> Global credentials (unrestricted) -> Add Cred
 
 * Deploy App
 Login -> Open Blue Ocean -> New Pipeline -> GitHub -> Select repository (Ex: jenkins-k8s) -> Create Pipeline
+
+* Test app
+kubectl get deployment
+kubectl get pods
+kubectl get services
+curl an-master0:32313
+
+* Set 
+Login -> Jenkins-k8s -> Configure -> Scan repository triggers -> Periodically if not otherwise run -> Set interval: 1 minutes.
