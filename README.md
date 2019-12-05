@@ -137,12 +137,12 @@ Login -> Credentials -> Jenkins -> Global credentials (unrestricted) -> Add Cred
 Login -> Open Blue Ocean -> New Pipeline -> GitHub -> Select repository (Ex: jenkins-k8s) -> Create Pipeline
 
 #### Test app
-
+```
 kubectl get deployment
 kubectl get pods
 kubectl get services
 curl an-master0:32313
-
+```
 #### Set Time Trigger deploy
 
 Login -> Jenkins-k8s -> Configure -> Scan repository triggers -> Periodically if not otherwise run -> Set interval: 1 minutes.
