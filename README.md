@@ -1,17 +1,16 @@
-##############################################################
-#### Deploy Simple App to Kubernetes Cluster using Jenkins ###
-##############################################################
+# Deploy Simple App to Kubernetes Cluster using Jenkins
 
-##### Eksekusi disemua node #####
+### Eksekusi disemua node
 
-* Set name resolution
+#### Set name resolution
+
 sudo vim /etc/hosts
 ```
 10.0.1.97 an-master0
 10.0.1.100 an-worker0
 10.0.1.101 an-worker1
 ```
-* Update & Install package
+#### Update & Install package
 ```
 apt update && apt upgrade -y
 sudo apt install -y docker.io; sudo docker version
@@ -29,20 +28,22 @@ ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2375 -H fd:// --containerd=/run/cont
 systemctl daemon-reload
 sudo service docker restart
 ```
-* test Docker remote access
+#### test Docker remote access
 ```
 docker -H tcp://10.0.1.97:2375 version
 docker -H tcp://10.0.1.101:2375 version
 docker -H tcp://10.0.1.100:2375 version
 ```
 
-##### Eksekusi di node an-master0 #####
- * Create Private Docker registry
+#### Eksekusi di node an-master0
+
+#### Create Private Docker registry
  ```
 sudo docker run -d -p 5000:5000 --restart=always --name registry registry:2
 ```
 
-##### Eksekusi disemua node #####
+### Eksekusi disemua node
+
 * Install k8s
 ```
 sudo apt install -y apt-transport-https; curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
@@ -53,20 +54,20 @@ deb http://apt.kubernetes.io/ kubernetes-xenial main
 sudo apt update; sudo apt install -y kubectl=1.15.4-00 kubelet=1.15.4-00 kubeadm=1.15.4-00
 ```
 
-##### Eksekusi di node an-master0 #####
+### Eksekusi di node an-master0
 ```
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
-* Instal POD Network Flannel
+#### Instal POD Network Flannel
 ```
 wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 kubectl apply -f kube-flannel.yml
 kubectl get pods --all-namespaces --watch
 ```
-* Tampilkan Token dan token-ca-cert-hash
+#### Tampilkan Token dan token-ca-cert-hash
 ```
 sudo kubeadm token list
 sudo openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
@@ -81,18 +82,18 @@ sudo kubeadm join --token [TOKEN] [NODE-MASTER]:6443 --discovery-token-ca-cert-h
 ```
 
 ##### Eksekusi di node an-master0 #####
-* Clone repository
+#### * Clone repository
 ```
 git clone https://github.com/misskecupbung/jenkins-k8s.git
 cd jenkins-k8s/modified-images/
 ```
-* build images
+#### * build images
 ```
 docker build -t misskecupbung/jenkins-k8s:latest .
 docker login
 docker push misskecupbung/jenkins-k8s:latest
 ```
-* create deployment and service
+#### * create deployment and service
 ```
 kubectl apply -f jenkins-deployment.yaml 
 kubectl apply -f jenkins-service.yaml 
@@ -113,7 +114,8 @@ Login -> Manage Jenkins -> Manage Plugins -> Available :
    * Kubernetes Credentials Plugin
    * Kubernetes plugin
    
-* Manage Kubernetes
+#### Manage Kubernetes
+
 Login -> Manage Jenkins -> Configure System -> Add a new cloud > Kubernetes :
    * Kubernetes URL : http://10.60.8.133:30100/
    * Add Container Template :
@@ -122,20 +124,24 @@ Login -> Manage Jenkins -> Configure System -> Add a new cloud > Kubernetes :
        * Docker images : joao29a/jnlp-slave-alpine-docker
 Apply/Save
 
-* create credential
+#### Create credential
+
 Login -> Credentials -> Jenkins -> Global credentials (unrestricted) -> Add Credential :
    * kind: Kubernetes Configuration (kubeconfig)
    * id: kubeconfig
    * enter directy. (paste from `/root/.kube/config` in master node.)
 
-* Deploy App
+#### Deploy App
+
 Login -> Open Blue Ocean -> New Pipeline -> GitHub -> Select repository (Ex: jenkins-k8s) -> Create Pipeline
 
-* Test app
+#### Test app
+
 kubectl get deployment
 kubectl get pods
 kubectl get services
 curl an-master0:32313
 
-* Set 
+#### Set Time Trigger deploy
+
 Login -> Jenkins-k8s -> Configure -> Scan repository triggers -> Periodically if not otherwise run -> Set interval: 1 minutes.
